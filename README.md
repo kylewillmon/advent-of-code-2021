@@ -6,7 +6,7 @@ zone. So feel free to look around, but I make no promises about the code here.
 
 If you intend on solving these puzzles yourself, I recommend
 [awesome-advent-of-code](https://github.com/Bogdanp/awesome-advent-of-code) as a good resource. If you do not intend on
-solving these puzzles yourself, I recommend [checking this out](https://www.youtube.com/watch?v=8vMZtXRq9B8) instead.
+solving these puzzles yourself, I recommend [checking this out](https://www.youtube.com/watch?v=dQw4w9WgXcQ) instead.
 
 If you are looking for my solutions to previous years, check out my
 [other repository](https://github.com/kylewillmon/advent-of-code-rs).
