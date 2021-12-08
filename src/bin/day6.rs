@@ -7,8 +7,8 @@ fn main() {
             let v: Result<Vec<u8>, _> = s.split(',').map(|s| s.trim().parse::<u8>()).collect();
             Ok(v?)
         },
-        |start| part_one(start),
-        |start| part_two(start),
+        part_one,
+        part_two,
     )
     .unwrap()
 }

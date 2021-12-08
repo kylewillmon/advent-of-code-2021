@@ -62,7 +62,7 @@ fn score(card: &BingoCard, num: u8) -> i64 {
         .filter(|s| !s.marked())
         .map(|s| s.num as i64)
         .sum();
-    return sum * (num as i64);
+    sum * (num as i64)
 }
 
 mod parse {
@@ -128,7 +128,7 @@ impl FromStr for Input {
                 .into())
             }
         };
-        ensure!(s.len() == 0, "Extra data in input file: {}", s);
+        ensure!(s.is_empty(), "Extra data in input file: {}", s);
         Ok(input)
     }
 }

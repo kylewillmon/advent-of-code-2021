@@ -8,8 +8,8 @@ fn main() {
             let (_, lines) = parse::lines(s).finish().unwrap();
             Ok(lines)
         },
-        |lines| part_one(lines),
-        |lines| part_two(lines),
+        part_one,
+        part_two,
     )
     .unwrap()
 }

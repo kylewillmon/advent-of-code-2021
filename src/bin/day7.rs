@@ -8,8 +8,8 @@ fn main() {
                 s.split(',').map(|s| s.trim().parse::<usize>()).collect();
             Ok(v?)
         },
-        |start| part_one(start),
-        |start| part_two(start),
+        part_one,
+        part_two,
     )
     .unwrap()
 }

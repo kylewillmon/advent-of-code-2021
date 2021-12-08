@@ -22,8 +22,8 @@ fn part_one(input: Vec<String>) -> Result<i64> {
     let mut epsilon = 0;
 
     for bit in 0..bitwidth {
-        gamma = gamma << 1;
-        epsilon = epsilon << 1;
+        gamma <<= 1;
+        epsilon <<= 1;
 
         match most_common(&input, bit) {
             Bit::One => gamma |= 1,
@@ -42,12 +42,12 @@ fn part_two(input: Vec<String>) -> Result<i64> {
 
     for bit in 0..bitwidth {
         if oxy.len() > 1 {
-            let oxy_crit = most_common(&oxy, bit).to_char();
+            let oxy_crit = most_common(&oxy, bit).as_char();
             oxy.retain(|l| l.chars().nth(bit).filter(|c| *c == oxy_crit).is_some());
         }
 
         if co2.len() > 1 {
-            let co2_crit = least_common(&co2, bit).to_char();
+            let co2_crit = least_common(&co2, bit).as_char();
             co2.retain(|l| l.chars().nth(bit).filter(|c| *c == co2_crit).is_some());
         }
     }
@@ -70,7 +70,7 @@ enum Bit {
 }
 
 impl Bit {
-    fn to_char(&self) -> char {
+    fn as_char(&self) -> char {
         match self {
             Bit::One => '1',
             Bit::Zero => '0',
@@ -78,7 +78,7 @@ impl Bit {
     }
 }
 
-fn most_common(input: &Vec<String>, bit: usize) -> Bit {
+fn most_common(input: &[String], bit: usize) -> Bit {
     let ones = input
         .iter()
         .filter(|l| l.chars().nth(bit).filter(|c| *c == '1').is_some())
@@ -91,7 +91,7 @@ fn most_common(input: &Vec<String>, bit: usize) -> Bit {
     }
 }
 
-fn least_common(input: &Vec<String>, bit: usize) -> Bit {
+fn least_common(input: &[String], bit: usize) -> Bit {
     match most_common(input, bit) {
         Bit::One => Bit::Zero,
         Bit::Zero => Bit::One,
