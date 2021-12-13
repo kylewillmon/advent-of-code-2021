@@ -14,7 +14,7 @@ fn part_one(input: String) -> Result<usize> {
 fn part_two(input: String) -> Result<usize> {
     let map = CaveMap::from_input(&input)?;
     Ok(map.count_paths("start", "end", |p, n| {
-        !is_small(n) || !p.contains(&n) || !has_double_small(p)
+        !is_small(n) || !p.contains(&n) || (!has_double_small(p) && n != "start")
     }))
 }
 
@@ -63,7 +63,7 @@ impl<'a> CaveMap<'a> {
                 Some(n) => {
                     if n == to {
                         count += 1;
-                    } else if n != from && allowed(&path, n) {
+                    } else if allowed(&path, n) {
                         path.push(n);
                         nexts.push(self.0.get(n).cloned().unwrap_or_default())
                     }
