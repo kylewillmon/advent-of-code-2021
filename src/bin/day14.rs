@@ -14,16 +14,29 @@ fn main() {
             Ok(out)
         },
         |(template, rules)| solve(template, rules, 10),
-        |_| Ok(0),
+        |(template, rules)| solve(template, rules, 40),
     )
     .unwrap()
 }
 
-fn solve(mut template: PolymerTemplate, rules: PairInsertionRules, steps: usize) -> Result<usize> {
-    for _ in 0..steps {
-        template = template.run_insertion_rules(&rules);
+fn solve(template: PolymerTemplate, rules: PairInsertionRules, steps: usize) -> Result<usize> {
+    let mut memory = HashMap::new();
+    let mut counts = HashMap::new();
+
+    for pair in template.0.windows(2) {
+        add_counts(
+            &mut counts,
+            get_counts(pair.try_into().unwrap(), steps, &rules, &mut memory),
+        );
     }
-    let counts = template.to_counts();
+
+    if let Some(poly) = template.0.last() {
+        *counts.entry(*poly).or_insert(0) += 1;
+    }
+
+    let mut counts: Vec<usize> = counts.values().copied().collect();
+
+    counts.sort_unstable();
 
     let val = match (counts.first(), counts.last()) {
         (Some(first), Some(last)) => last - first,
@@ -32,58 +45,41 @@ fn solve(mut template: PolymerTemplate, rules: PairInsertionRules, steps: usize)
     Ok(val)
 }
 
-#[derive(Debug, Clone)]
-struct PolymerTemplate(Vec<u8>);
-
-impl PolymerTemplate {
-    fn run_insertion_rules(&self, rules: &PairInsertionRules) -> Self {
-        let mut t: Vec<u8> = self
-            .0
-            .windows(2)
-            .map(|pair| {
-                let mut arr = [pair[0], pair[0]];
-                if let Some(p) = rules.0.get(pair) {
-                    arr[1] = *p;
-                    arr.into_iter()
-                } else {
-                    let mut iter = arr.into_iter();
-                    iter.next();
-                    iter
-                }
-            })
-            .flatten()
-            .collect();
-        if let Some(p) = self.0.last() {
-            t.push(*p);
-        }
-        PolymerTemplate(t)
+fn get_counts(
+    pair: [u8; 2],
+    steps: usize,
+    rules: &PairInsertionRules,
+    memory: &mut HashMap<([u8; 2], usize), HashMap<u8, usize>>,
+) -> HashMap<u8, usize> {
+    if let Some(val) = memory.get(&(pair, steps)) {
+        return val.clone();
     }
 
-    fn to_counts(self) -> Vec<usize> {
-        let mut polys = self.0;
-        polys.sort_unstable();
-        let mut polys = polys.into_iter();
+    let poly = match (steps, rules.0.get(&pair)) {
+        (0, _) | (_, None) => return [(pair[0], 1)].into_iter().collect(),
+        (_, Some(poly)) => *poly,
+    };
 
-        let mut counts = Vec::new();
-        if let Some(first) = polys.next() {
-            let mut last = first;
-            let mut count = 1;
-            for p in polys {
-                if p == last {
-                    count += 1;
-                } else {
-                    counts.push(count);
-                    last = p;
-                    count = 1;
-                }
-            }
-        }
+    let sub_pair = [pair[0], poly];
+    let mut counts = get_counts(sub_pair, steps - 1, rules, memory);
 
-        counts.sort_unstable();
+    let sub_pair = [poly, pair[1]];
 
-        counts
+    add_counts(&mut counts, get_counts(sub_pair, steps - 1, rules, memory));
+
+    memory.insert((pair, steps), counts.clone());
+
+    counts
+}
+
+fn add_counts(dest: &mut HashMap<u8, usize>, src: HashMap<u8, usize>) {
+    for (k, v) in src.into_iter() {
+        *dest.entry(k).or_insert(0) += v;
     }
 }
+
+#[derive(Debug, Clone)]
+struct PolymerTemplate(Vec<u8>);
 
 #[derive(Debug, Clone)]
 struct PairInsertionRules(HashMap<[u8; 2], u8>);
