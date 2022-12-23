@@ -227,6 +227,6 @@ if (import.meta.main) {
   const input = Deno.readTextFileSync(
     new URL(import.meta.resolve("./input.txt")),
   );
-  console.log("Part 1: ", part1(input));
+  // console.log("Part 1: ", part1(input));
   console.log("Part 2: ", part2(input));
 }
